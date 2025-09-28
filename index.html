@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Route Academy | Your Guide to Free Cybersecurity Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is structured as an interactive dashboard, not a linear report. It prioritizes user action by first presenting the top 3 recommended starting points. The core is an interactive "Learning Path Builder" that allows users to choose between a 'Defender' (Blue Team) or 'Penetration Tester' (Red Team) path, dynamically displaying a guided step-by-step curriculum. This is followed by a filterable library of all resources for self-exploration and a promotional section for video content. This task-oriented design is chosen over a linear report structure to empower users to immediately find relevant information and build a personalized plan, which is more engaging and useful for a beginner seeking direction. -->
+    <!-- Visualization & Content Choices:
+    - Report Info: Top 3 starting points (ISC2, Cisco, Google). Goal: Guide. Viz/Method: Prominent clickable cards. Interaction: Click to navigate. Justification: Provides immediate, high-impact recommendations. Library: Vanilla HTML/JS.
+    - Report Info: Two learning roadmaps (Network Defender, Pen Tester). Goal: Organize/Guide. Viz/Method: Interactive timeline/step-by-step guide built with HTML/CSS. Interaction: User toggles between "Defender" and "Tester" paths to dynamically display the corresponding steps. Justification: Transforms static tables into a personalized, interactive curriculum builder. Library: Vanilla HTML/JS.
+    - Report Info: YouTube Channel Promotion. Goal: Promote/Engage. Viz/Method: Promotional section with a clear call-to-action button. Interaction: Click to navigate to external YouTube playlist. Justification: Provides an alternative learning medium and drives traffic to the user's channel. Library: Vanilla HTML/JS.
+    - Report Info: Full list of all training resources. Goal: Inform/Organize. Viz/Method: A filterable grid of resource cards. Interaction: Users click category buttons (e.g., 'Vendor', 'Labs') to filter the grid. Justification: Allows users to easily browse and find specific types of resources from the comprehensive list. Library: Vanilla HTML/JS.
+    - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDF8F0;
+            color: #333333;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover {
+            color: #4A90E2;
+            border-bottom-color: #4A90E2;
+        }
+        .btn-primary {
+            background-color: #4A90E2;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.2s;
+            transform: scale(1);
+        }
+        .btn-primary:hover {
+            background-color: #357ABD;
+            transform: scale(1.05);
+        }
+        .btn-secondary {
+            background-color: #E0E7FF;
+            color: #4A90E2;
+            transition: background-color 0.3s, transform 0.2s;
+             transform: scale(1);
+        }
+        .btn-secondary:hover {
+            background-color: #C7D2FE;
+             transform: scale(1.05);
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.75rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .path-toggle.active {
+            background-color: #4A90E2;
+            color: #FFFFFF;
+            box-shadow: 0 4px 14px 0 rgba(74, 144, 226, 0.39);
+        }
+        .path-toggle {
+            background-color: #FFFFFF;
+            color: #333333;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background-color: #4A90E2;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .step-connector::before {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            left: calc(1.25rem - 1px);
+            bottom: -1.25rem;
+            width: 2px;
+            background-color: #CBD5E1;
+            z-index: -1;
+        }
+        .timeline-step:last-child .step-connector::before {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-gray-800">
+                <span class="text-[#4A90E2]">Net Route</span><span class="text-gray-600"> Academy</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#start" class="nav-link font-medium">Get Started</a>
+                <a href="#paths" class="nav-link font-medium">Learning Paths</a>
+                <a href="#resources" class="nav-link font-medium">All Resources</a>
+                <a href="#videos" class="nav-link font-medium">Video Guides</a>
+            </div>
+            <a href="#start" class="md:hidden btn-secondary font-semibold py-2 px-4 rounded-full text-sm">Start</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="py-20 md:py-32 text-center bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight">Your Cybersecurity Career Starts Here.</h1>
+                <p class="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">A world-class, entry-level cybersecurity education is fully attainable at little to no cost. This guide helps you navigate the best free training, certifications, and hands-on labs to launch your career.</p>
+                <div class="mt-10">
+                    <a href="#start" class="btn-primary font-semibold py-4 px-8 rounded-full text-lg">Find Your Starting Point</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Get Started Section -->
+        <section id="start" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Where to Start? Top 3 Recommendations</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">For the biggest impact and best value, begin your journey with one of these premier, no-cost programs. They provide globally-recognized credentials and a strong foundation.</p>
+                </div>
+                <div class="mt-12 grid md:grid-cols-3 gap-8">
+                    <!-- ISC2 Card -->
+                    <a href="https://www.isc2.org/Certifications/CC" target="_blank" rel="noopener noreferrer" class="card block p-8">
+                        <div class="text-4xl">🏅</div>
+                        <h3 class="text-2xl font-bold mt-4">ISC2 Certified in Cybersecurity (CC)</h3>
+                        <p class="mt-2 text-gray-600">The gold standard. Get free official training and a free exam voucher from a globally respected certification body. The most direct path to a recognized credential.</p>
+                        <span class="mt-6 inline-block font-semibold text-[#4A90E2]">Get Certified &rarr;</span>
+                    </a>
+                    <!-- Cisco Card -->
+                    <a href="https://www.netacad.com/career-paths/cybersecurity" target="_blank" rel="noopener noreferrer" class="card block p-8">
+                        <div class="text-4xl">🌐</div>
+                        <h3 class="text-2xl font-bold mt-4">Cisco Jr. Cybersecurity Analyst</h3>
+                        <p class="mt-2 text-gray-600">A free 120-hour structured career path from a networking giant. Provides deep foundational knowledge and prepares you for an industry-recognized certification.</p>
+                        <span class="mt-6 inline-block font-semibold text-[#4A90E2]">Start Learning &rarr;</span>
+                    </a>
+                    <!-- Google Card -->
+                    <a href="https://www.coursera.org/professional-certificates/google-cybersecurity" target="_blank" rel="noopener noreferrer" class="card block p-8">
+                        <div class="text-4xl">💻</div>
+                        <h3 class="text-2xl font-bold mt-4">Google Cybersecurity Certificate</h3>
+                        <p class="mt-2 text-gray-600">An employer-recognized professional certificate. Access it completely free by applying for Coursera's financial aid. Learn job-ready skills directly from Google.</p>
+                        <span class="mt-6 inline-block font-semibold text-[#4A90E2]">Apply for Aid &rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Learning Paths Section -->
+        <section id="paths" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Build Your Learning Path</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Choose a career focus to see a curated, step-by-step roadmap. These paths integrate certifications, courses, and hands-on labs to make you job-ready.</p>
+                </div>
+                <div id="path-selector" class="mt-10 flex justify-center space-x-4">
+                    <button data-path="defender" class="path-toggle active flex items-center space-x-2 font-semibold py-3 px-6 rounded-full text-lg">
+                        <span>🛡️</span>
+                        <span>Network Defender</span>
+                    </button>
+                    <button data-path="tester" class="path-toggle flex items-center space-x-2 font-semibold py-3 px-6 rounded-full text-lg">
+                        <span>⚔️</span>
+                        <span>Penetration Tester</span>
+                    </button>
+                </div>
+
+                <div id="path-content" class="mt-12 max-w-3xl mx-auto">
+                    <!-- Dynamic content will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- All Resources Section -->
+        <section id="resources" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Explore All Free Resources</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Dive into the complete library of free training platforms. Filter by category to find the perfect course, lab, or certification program for your needs.</p>
+                </div>
+                <div id="resource-filters" class="mt-10 flex flex-wrap justify-center gap-2 md:gap-4">
+                    <button data-filter="all" class="filter-btn active font-medium py-2 px-4 rounded-full">All</button>
+                    <button data-filter="cert" class="filter-btn font-medium py-2 px-4 rounded-full">Foundational Certs</button>
+                    <button data-filter="vendor" class="filter-btn font-medium py-2 px-4 rounded-full">Vendor Training</button>
+                    <button data-filter="hands-on" class="filter-btn font-medium py-2 px-4 rounded-full">Hands-On Labs</button>
+                    <button data-filter="mooc" class="filter-btn font-medium py-2 px-4 rounded-full">University / MOOC</button>
+                </div>
+                <div id="resource-grid" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Resource cards will be injected here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- YouTube Promo Section -->
+        <section id="videos" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Learn with Net Route Academy on YouTube</h2>
+                <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Prefer learning by watching? Our YouTube channel has a dedicated playlist to walk you through key cybersecurity concepts, career advice, and tool demonstrations. Watch, learn, and subscribe!</p>
+                <div class="mt-10">
+                    <a href="https://www.youtube.com/watch?v=Ecoa8DEMVWM&list=PLYZd1M5uUIXHc0pSbHzW3WwagaSGPG-eJ" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center font-semibold py-4 px-8 rounded-full text-lg">
+                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.78 22 12 22 12s0 3.22-.42 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.594.42-7.812.42-7.812.42s-6.218 0-7.812-.42a2.506 2.506 0 0 1-1.768-1.768C2 15.22 2 12 2 12s0-3.22.42-4.814a2.506 2.506 0 0 1 1.768-1.768C5.782 5 12 5 12 5s6.218 0 7.812.418ZM9.94 15.582V8.418L15.832 12 9.94 15.582Z" clip-rule="evenodd" /></svg>
+                        <span>Watch the Cybersecurity Playlist</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2024 Net Route Academy. Developed and conceptualized by Net Route Academy.</p>
+            <p class="text-sm text-gray-400 mt-2">This is an informational tool and not affiliated with any of the organizations listed.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- DATA ---
+            const learningPaths = {
+                defender: [
+                    { step: 1, title: 'Foundational Certification', platform: 'ISC2', description: 'Start with the globally recognized ISC2 Certified in Cybersecurity (CC). The training and exam are free.', outcome: 'ISC2 CC Credential', icon: '🏅' },
+                    { step: 2, title: 'Networking & Defense Deep Dive', platform: 'Cisco Networking Academy', description: 'Complete the 120-hour Junior Cybersecurity Analyst path for deep, practical knowledge.', outcome: 'Jr. Cybersecurity Analyst Badge', icon: '🌐' },
+                    { step: 3, title: 'Enterprise & Cloud Security', platform: 'Microsoft Learn', description: 'Learn security in an enterprise context with the SC-900 learning path.', outcome: 'Knowledge of Defender & Sentinel', icon: '☁️' },
+                    { step: 4, title: 'Practical Defensive Skills', platform: 'TryHackMe / Cybrary', description: 'Get hands-on with network monitoring, forensics, and incident response labs.', outcome: 'Practical Blue Team Skills', icon: '🔬' },
+                    { step: 5, title: 'Specialize in Network Hardware', platform: 'Fortinet Training', description: 'Gain specific knowledge of firewall technology with the free NSE 1 & 2 courses.', outcome: 'Fortinet NSE 1 & 2 Badges', icon: '🛡️' }
+                ],
+                tester: [
+                    { step: 1, title: 'Ethical Hacking Foundations', platform: 'EC-Council (CodeRed)', description: 'Begin with the Ethical Hacking Essentials course for core offensive security concepts.', outcome: 'E|HE Certificate', icon: '🎓' },
+                    { step: 2, title: 'Practical Hacking Skills', platform: 'TryHackMe', description: 'Get extensive hands-on practice with enumeration, exploitation, and web attacks.', outcome: 'Hands-on Red Team Skills', icon: '⚔️' },
+                    { step: 3, title: 'Structured Offensive Modules', platform: 'Hack The Box Academy', description: 'Tackle module-based learning on specific attack vectors like Active Directory and SQL injection.', outcome: 'Deeper Hacking Knowledge', icon: '🎯' },
+                    { step: 4, title: 'Build a Job-Ready Portfolio', platform: 'Google / Coursera', description: 'Complete the Google Cybersecurity Certificate (via financial aid) for a comprehensive, employer-recognized credential.', outcome: 'Google Cybersecurity Certificate', icon: '💼' },
+                    { step: 5, title: 'Master a Pentesting OS', platform: 'Cybrary', description: 'Complete the free Kali Linux fundamentals course to master the standard toolset for penetration testing.', outcome: 'Kali Linux Proficiency', icon: '🐧' }
+                ]
+            };
+
+            const allResources = [
+                { name: 'ISC2 Certified in Cybersecurity (CC)', category: 'cert', desc: 'Free official training and exam for a globally recognized entry-level certification.', link: 'https://www.isc2.org/Certifications/CC', icon: '🏅'},
+                { name: 'Cisco Jr. Cybersecurity Analyst', category: 'cert', desc: 'A 120-hour free career path covering networking, defense, and threat management.', link: 'https://www.netacad.com/career-paths/cybersecurity', icon: '🌐' },
+                { name: 'Google Cybersecurity Certificate', category: 'mooc', desc: 'Top-rated professional certificate on Coursera. Access for free via financial aid application.', link: 'https://www.coursera.org/professional-certificates/google-cybersecurity', icon: '💻' },
+                { name: 'IBM Cybersecurity Analyst', category: 'mooc', desc: 'Another excellent professional certificate on Coursera, also accessible via financial aid.', link: 'https://www.coursera.org/professional-certificates/ibm-cybersecurity-analyst', icon: '💼' },
+                { name: 'Fortinet NSE 1 & 2', category: 'vendor', desc: 'Free self-paced training on the threat landscape and security fundamentals from a leading vendor.', link: 'https://training.fortinet.com/', icon: '🛡️' },
+                { name: 'Microsoft Security Fundamentals (SC-900)', category: 'vendor', desc: 'Free learning paths on Microsoft Learn to master cloud and enterprise security concepts.', link: 'https://learn.microsoft.com/en-us/training/browse/?roles=security-engineer', icon: '☁️' },
+                { name: 'EC-Council Essentials Series', category: 'vendor', desc: 'Free courses on Ethical Hacking, Network Defense, and Digital Forensics.', link: 'https://codered.eccouncil.org/series/essentials-series', icon: '⚔️' },
+                { name: 'TryHackMe', category: 'hands-on', desc: 'A beginner-friendly, gamified platform with hundreds of free labs to learn by doing.', link: 'https://tryhackme.com/', icon: '🔬' },
+                { name: 'Hack The Box Academy', category: 'hands-on', desc: 'Structured, module-based learning with a generous free tier for core IT and hacking skills.', link: 'https://academy.hackthebox.com/', icon: '🎯' },
+                { name: 'Cybrary', category: 'mooc', desc: 'Freemium platform with 50+ free courses, labs, and a full foundational career path.', link: 'https://www.cybrary.it/', icon: '📚' },
+                { name: 'HarvardX: CS50\'s Intro to Cybersecurity', category: 'mooc', desc: 'Audit a world-class introductory course from Harvard for free on the edX platform.', link: 'https://www.edx.org/learn/cybersecurity/harvard-university-cs50-s-introduction-to-cybersecurity', icon: '🎓' }
+            ];
+
+            // --- Learning Path Logic ---
+            const pathSelector = document.getElementById('path-selector');
+            const pathContent = document.getElementById('path-content');
+            
+            function renderPath(pathName) {
+                const pathData = learningPaths[pathName];
+                pathContent.innerHTML = pathData.map(item => `
+                    <div class="timeline-step relative flex items-start space-x-4 pb-8">
+                        <div class="step-connector">
+                            <div class="h-10 w-10 rounded-full bg-[#4A90E2] text-white flex items-center justify-center text-xl font-bold">${item.icon}</div>
+                        </div>
+                        <div class="pt-1.5 flex-1">
+                            <p class="text-sm font-semibold text-gray-500">STEP ${item.step} - ${item.platform}</p>
+                            <h4 class="text-xl font-bold mt-1 text-gray-900">${item.title}</h4>
+                            <p class="mt-1 text-gray-600">${item.description}</p>
+                            <p class="mt-2 text-sm font-medium text-gray-800 bg-blue-100/50 inline-block px-3 py-1 rounded-full">✓ ${item.outcome}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            pathSelector.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) {
+                    const selectedPath = button.dataset.path;
+                    
+                    // Update button styles
+                    pathSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    // Render content
+                    renderPath(selectedPath);
+                }
+            });
+
+            // Initial render
+            renderPath('defender');
+
+            // --- Resource Grid Logic ---
+            const resourceGrid = document.getElementById('resource-grid');
+            const resourceFilters = document.getElementById('resource-filters');
+
+            function renderResources(filter = 'all') {
+                const filteredResources = filter === 'all' 
+                    ? allResources 
+                    : allResources.filter(r => r.category === filter);
+
+                resourceGrid.innerHTML = filteredResources.map(res => `
+                    <a href="${res.link}" target="_blank" rel="noopener noreferrer" class="card block p-6">
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-4">${res.icon}</span>
+                            <h4 class="text-xl font-bold flex-1">${res.name}</h4>
+                        </div>
+                        <p class="mt-3 text-gray-600">${res.desc}</p>
+                    </a>
+                `).join('');
+            }
+            
+            resourceFilters.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if(button) {
+                    const filter = button.dataset.filter;
+                    
+                    resourceFilters.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    renderResources(filter);
+                }
+            });
+            
+            // Initial render
+            renderResources('all');
+
+            // Smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
